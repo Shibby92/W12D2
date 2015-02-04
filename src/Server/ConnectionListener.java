@@ -21,8 +21,8 @@ public class ConnectionListener extends Thread {
 			String str="";
 			while ((str = bf.readLine()) != null) {
 				if (!str.equals("")) {
-				Message incoming =new	Message(str,sender);
-				System.out.println(incoming.getSender()+": "+incoming.getContent());
+				Message incoming =new	Message(str +"\n",sender);
+				System.out.println(incoming.getSender()+":"+incoming.getContent());
 				}
 			}
 		} catch (IOException e) {

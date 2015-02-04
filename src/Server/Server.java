@@ -10,6 +10,10 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Random;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import GUI.ChatGui;
 
 public class Server {
@@ -36,6 +40,12 @@ public class Server {
 					ConnectionListener cl = new ConnectionListener(clientName,
 							client.getInputStream());
 					cl.start();
+					new Message ("join%"+ clientName, "%server%");
+					client.getOutputStream().write(0);
+					
+				}
+				else{
+					client.getOutputStream().write(-1);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -47,6 +57,14 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
+	
+			try {
+				new XMLConnection();
+			} catch (ParserConfigurationException | SAXException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
 		try {
 			serverStart();
 		} catch (IOException e) {
@@ -56,12 +74,22 @@ public class Server {
 	}
 
 	private static String handShake(InputStream is) throws IOException {
-		BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-		String line = null;
-		if ((line = bf.readLine()) != null) {
-			return line;
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String line = br.readLine();
+		line= line.replaceAll("%", "");
+		String password= br.readLine();
+		int result;
+		try {
+			result = XMLConnection.userLogin(line, password);
+			if(result==0){
+			return null;
 		}
-		return null;
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return line;
 	}
 
 }

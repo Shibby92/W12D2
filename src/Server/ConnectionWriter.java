@@ -2,26 +2,29 @@ package Server;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 public class ConnectionWriter extends Thread {
+
 	public static HashMap<String, OutputStream> connections = new HashMap<String, OutputStream>();
 	private Set<String> set = connections.keySet();
-	private Iterator<String> it;
 
+	@Override
 	public void run() {
 		while (true) {
 			if (Message.hasNext()) {
-				it= set.iterator();
 				Message msg = Message.next();
-				byte[] msgByte = ((msg.getSender() + ": " + msg.getContent())
-						.getBytes());
+				byte[] msgByte = (msg.getSender() + ": " + msg.getContent())
+						.getBytes();
+				Iterator<String> it = set.iterator();
 				while (it.hasNext()) {
-					String temp = it.next();
-					if (!temp.equals(msg.getSender())) {
-						OutputStream os = connections.get(temp);
+					String current = it.next();
+					if (!current.equals(msg.getSender())) {
+						OutputStream os = connections.get(current);
+
 						try {
 							os.write(msgByte);
 							os.flush();
@@ -29,11 +32,10 @@ public class ConnectionWriter extends Thread {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+
 					}
 				}
 			}
-
 		}
 	}
-
 }

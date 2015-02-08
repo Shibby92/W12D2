@@ -6,30 +6,35 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class ConnectionListener extends Thread {
+
 	private InputStream is;
 	private String sender;
 
-	public ConnectionListener(String name, InputStream is) {
-		super();
+	// KONSTRUKTOR
+	public ConnectionListener(InputStream is, String sender) {
 		this.is = is;
-		this.sender = name;
+		this.sender = sender;
+		
 	}
 
+	@Override
 	public void run() {
-		BufferedReader bf = new BufferedReader(new InputStreamReader(this.is));
+		BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 		try {
-			String str="";
+			String str = "";
+
 			while ((str = bf.readLine()) != null) {
-				if (!str.equals("")) {
-				Message incoming =new	Message(str +"\n",sender);
-				System.out.println(incoming.getSender()+":"+incoming.getContent());
+				if(!str.equals("")){
+					
+					Message incoming = new Message(str, sender); 
 				}
 			}
+			
+			ConnectionWriter.connections.remove(sender);
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-
 }
